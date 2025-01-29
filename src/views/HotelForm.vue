@@ -52,18 +52,6 @@
                     <span v-if="errors.direccion">{{ errors.direccion.join(', ') }}</span>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                    <label class="mb-2" for="telefono">Teléfono:</label>
-                    <input type="text" v-model="form.telefono" :class="['form-control', { error: errors.telefono }]"
-                        id="telefono" />
-                    <span v-if="errors.telefono">{{ errors.telefono.join(', ') }}</span>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                    <label class="mb-2" for="correo">Correo:</label>
-                    <input type="email" v-model="form.correo" :class="['form-control', { error: errors.correo }]"
-                        id="correo" />
-                    <span v-if="errors.correo">{{ errors.correo.join(', ') }}</span>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
                     <label class="mb-2" for="cantidad">Cantidad de habitaciones:</label>
                     <input type="number" v-model="form.totalhab" class="form-control" id="totalhab" :min="1" :max="1000"
                         :class="{ error: errors.totalhab }" />
@@ -88,9 +76,46 @@
                 </div>
             </div>
         </form>
-        <div class="row">
-            <div v-if="form.element_id">
-                <h3>Edición y carga de habitaciones</h3>
+        <div class="row" v-if="hotelId">
+            <hr class="mt-2">
+            <div class="col-12">
+                <h1 class="my-3 h4 text-success fw-bold">Habitaciones</h1>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <label class="mb-2" for="habitacion_id">Habitación:</label>
+                <select v-model="habdata.habitacion_id" @change="fetchAcomodaciones" class="form-control"
+                    id="habitacion_id">
+                    <option value="">Selecciona una habitación</option>
+                    <option v-for="habitacion in habitaciones" :key="habitacion.id" :value="habitacion.id">
+                        {{ habitacion.nombre }}
+                    </option>
+                </select>
+                <span v-if="errors.habitacion_id">{{ errors.habitacion_id.join(', ') }}</span>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <label class="mb-2" for="acomodacion_id">Acomodación:</label>
+                <select v-model="habdata.acomodacion_id" class="form-control" id="acomodacion_id"
+                    :class="{ error: errors.acomodacion_id }">
+                    <option value="">Selecciona una acomodación</option>
+                    <option v-for="aconomodacion in acomodaciones" :key="aconomodacion.id" :value="aconomodacion.id">
+                        {{ aconomodacion.nombre }}
+                    </option>
+                </select>
+                <span v-if="errors.acomodacion_id">{{ errors.acomodacion_id.join(', ') }}</span>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <label class="mb-2" for="canthab">Cantidad:</label>
+                <input type="number" v-model="habdata.canthab" class="form-control" id="canthab" :min="1" :max="1000"
+                    :class="{ error: errors.canthab }" />
+                <span v-if="errors.canthab">{{ errors.canthab.join(', ') }}</span>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
+                <button type="submit" class="btn btn-success" @click="guardarHabitacionHotel">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Guardar
+                </button>
+            </div>
+            <div class="col-12 mt-3">
                 <table class="table">
                     <thead>
                         <tr>
@@ -102,16 +127,37 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(habitacion, index) in habitaciones" :key="index">
-                            <td>{{ form.element_id }}</td>
-                            <td><input type="text" v-model="habitacion.habitacion_id" /></td>
-                            <td><input type="text" v-model="habitacion.acomodacion_id" /></td>
-                            <td><input type="number" v-model="habitacion.nro_habitaciones" /></td>
+                        <tr v-for="(habhotel, index) in habitacionHotel" :key="index">
+                            <td>{{ habhotel.id }}</td>
+                            <td>{{ habhotel.habitacion.data.nombre }}</td>
+                            <td>{{ habhotel.acomodacion.data.nombre }}</td>
+                            <td>{{ habhotel.canthab }}</td>
+                            <td>
+                                <!-- Aquí puedes agregar botones para editar o eliminar -->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary dropdown-toggle"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-bars text-white"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <button type="button" v-on:click="editHotelHabitacion(habhotel)"
+                                                class="dropdown-item text-primary">
+                                                <i class="fa-solid fa-pencil me-1"></i> Editar
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" v-on:click="alertaBorrar(habhotel)"
+                                                class="dropdown-item text-danger">
+                                                <i class="fa-solid fa-trash me-1"></i> Eliminar
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
-                <button @click="addHabitacion">Agregar Habitación</button>
-                <button @click="submitHabitaciones">Guardar Habitaciones</button>
             </div>
         </div>
     </div>
@@ -120,7 +166,7 @@
 
 <script setup>
 import apiRoutes from '@/router/ApiRoutes';
-import { showAlert } from '@/scripts/alerts';
+import { deleteAlert, showAlert } from '@/scripts/alerts';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -139,8 +185,8 @@ const form = ref({
     element_id: ''
 });
 
-const habitaciones = ref({
-    regId: '',
+const habdata = ref({
+    hotel_id: '',
     habitacion_id: '',
     acomodacion_id: '',
     canthab: 0,
@@ -148,7 +194,14 @@ const habitaciones = ref({
 
 const departamentos = ref([]);
 const ciudades = ref([]);
+const habitaciones = ref([]);
+const acomodaciones = ref([]);
+const habitacionHotel = ref([]);
 const errors = ref({});
+const isEditModeHab = ref(false);
+const hotelId = ref(null);
+const maxHabitaciones = ref(0);
+const HabitacionId = ref(null);
 
 const fetchDepartamentos = async () => {
     try {
@@ -157,6 +210,16 @@ const fetchDepartamentos = async () => {
         departamentos.value = await resultDep.data;
     } catch (error) {
         console.error('Error al obtener los departamentos:', error);
+    }
+};
+
+const fetchHabitacionHotel = async () => {
+    try {
+        const response = await fetch(apiRoutes.getHabitacionHotelList.url + hotelId.value);
+        const resulthht = await response.json();
+        habitacionHotel.value = await resulthht.data;
+    } catch (error) {
+        console.error('Error al obtener los Hoteles:', error);
     }
 };
 
@@ -188,78 +251,154 @@ const fetchNombre = async () => {
     }
 };
 
-watch(() => form.value.departamento_id, fetchCiudades);
-watch(() => form.value.ciudad_id, fetchNombre);
-
-const submitForm = async () => {
-  try {
-    errors.value = {};
-    const url = form.value.element_id ? `${apiRoutes.getHoteles.url}${form.value.element_id}` : apiRoutes.getHoteles.url;
-    const method = form.value.element_id ? 'PUT' : 'POST';
-    
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(form.value)
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      errors.value = data.errors || {};
-    } else {
-      showAlert('success', 'Enviado', data.data);
-      errors.value = {};
-    }
-  } catch (error) {
-    console.error('Error al enviar el formulario:', error);
-  }
-};
-
-
-const addHabitacion = () => {
-    habitaciones.value.push({
-        habitacion_id: '',
-        acomodacion_id: '',
-        nro_habitaciones: null
-    });
-};
-
-const submitHabitaciones = async () => {
+const fetchHabitaciones = async () => {
     try {
-        const response = await fetch(apiRoutes.getHoteles.url, {
-            method: 'POST',
+        const response = await fetch(apiRoutes.getHabitacion.url);
+        const resultHab = await response.json();
+        habitaciones.value = await resultHab.data;
+    } catch (error) {
+        console.error('Error al obtener las habitaciones:', error);
+    }
+};
+
+const fetchAcomodaciones = async () => {
+    const url = habdata.value.habitacion_id ? apiRoutes.getAcomodacionHab.url + habdata.value.habitacion_id : apiRoutes.getAcomodacion.url;
+    try {
+        const response = await fetch(url);
+        const resultAcom = await response.json();
+        acomodaciones.value = resultAcom.data;
+    } catch (error) {
+        console.error('Error al obtener las acomodaciones:', error);
+    }
+};
+
+const editHotelHabitacion = async (element) => {
+    habdata.value = {
+        ...habdata.value,
+        hotel_id: hotelId.value,
+        habitacion_id: element.habitacion.data.id,
+        acomodacion_id: element.acomodacion.data.id,
+        canthab: element.canthab,
+    };
+    isEditModeHab.value = true;
+    HabitacionId.value = element.id;
+    if (habdata.value.habitacion_id) {
+        await fetchAcomodaciones(habdata.value.habitacion_id);
+    } else {
+        await fetchAcomodaciones();
+    }
+};
+
+const fetchTotalHabitaciones = async () => {
+    try {
+        const response = await fetch(apiRoutes.getContarHabitacion.url + hotelId.value);
+        const resultth = await response.json();
+        const totalHabitaciones = resultth.data;
+        let habitacionesActuales = 0;
+        if (HabitacionId.value) {
+            // Busca la cantidad de habitaciones del elemento actual
+            const habitacionResponse = await fetch(`${apiRoutes.getContarHabitacionLog.url}/${HabitacionId.value}`);
+            const habitacionResult = await habitacionResponse.json();
+            habitacionesActuales = habitacionResult.data;
+        }
+        return {
+            totalHabitaciones,
+            habitacionesActuales
+        };
+    } catch (error) {
+        console.error('Error al obtener el total de habitaciones:', error);
+        return 0; // Retornar 0 en caso de error para evitar bloquear el proceso
+    }
+};
+
+const guardarHabitacionHotel = async () => {
+    const apiUrl = isEditModeHab.value ? `${apiRoutes.getHabitacionHotel.url}/${HabitacionId.value}` : apiRoutes.getHabitacionHotel.url;
+    const method = isEditModeHab.value ? 'PUT' : 'POST';
+
+    const { totalHabitaciones, habitacionesActuales } = await fetchTotalHabitaciones(hotelId.value, habdata.value.id);
+
+    // Validar la cantidad de habitaciones ingresadas
+    const nuevasHabitaciones = habdata.value.canthab;
+    const habitacionesTotalesActualizadas = totalHabitaciones - habitacionesActuales + nuevasHabitaciones;
+
+    if (habitacionesTotalesActualizadas > maxHabitaciones.value) {
+        showAlert('error', 'Error', `La cantidad de habitaciones ingresadas (${habdata.value.canthab}) excede la cantidad máxima permitida (${maxHabitaciones.value})`);
+        return; // Detener el guardado si la validación falla
+    }
+    try {
+        const response = await fetch(apiUrl, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                hotel_id: form.value.element_id,
-                habitaciones: habitaciones.value
-            })
+            body: JSON.stringify(habdata.value)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            showAlert('success', 'Completado', habdata.value.id ? 'Elemento actualizado exitosamente' : 'Elemento creado exitosamente');
+            isEditModeHab.value = false;
+            habdata.value = {
+                ...habdata.value,
+                habitacion_id: '',
+                acomodacion_id: '',
+                canthab: 0,
+            };
+            fetchHabitacionHotel(); // Actualiza la tabla después de guardar
+        } else {
+            const errorResult = await response.json();
+            showAlert('error', 'Error', errorResult.errors || 'Error al guardar el elemento');
+        }
+    } catch (error) {
+        console.error('Error al guardar el elemento:', error);
+        showAlert('error', 'Error', error.errors);
+    }
+};
+
+const alertaBorrar = async (element) => {
+    deleteAlert("¿Estás seguro de que deseas borrar este elemento nro. " + element.id + "?", apiRoutes.getHabitacionHotel.url + "/" + element.id, fetchHabitacionHotel);
+};
+
+watch(() => form.value.departamento_id, fetchCiudades);
+watch(() => form.value.ciudad_id, fetchNombre);
+watch(() => habdata.value.habitacion_id, fetchAcomodaciones());
+
+const submitForm = async () => {
+    try {
+        errors.value = {};
+        const url = form.value.element_id ? `${apiRoutes.getHoteles.url}/${form.value.element_id}` : apiRoutes.getHoteles.url;
+        const method = form.value.element_id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(form.value)
         });
         const data = await response.json();
 
         if (!response.ok) {
-            showAlert('error', 'Error', 'Hubo un problema al guardar las habitaciones. Por favor, revisa los errores.');
+            errors.value = data.errors || {};
         } else {
-            showAlert('success', 'Enviado', 'Habitaciones guardadas con éxito.');
+            hotelId.value = data.element_id;
+            habdata.value.hotel_id = hotelId.value;
+            maxHabitaciones.value = form.value.totalhab;
+            showAlert('success', 'Enviado', data.data);
+            errors.value = {};
         }
     } catch (error) {
-        showAlert('error', 'Error', 'Hubo un problema al guardar las habitaciones.');
+        console.error('Error al enviar el formulario:', error);
     }
 };
 
 const loadHotelData = async () => {
     if (form.value.element_id) {
         try {
-            const response = await fetch(apiRoutes.getHoteles.url + form.value.element_id);
+            const response = await fetch(apiRoutes.getHoteles.url + '/' + form.value.element_id);
             const resultload = await response.json();
-
             if (response.ok) {
                 const hotelData = await resultload.data;
-                console.log(hotelData);
-                
                 form.value = {
                     ...form.value,
                     nombre: hotelData.nombre,
@@ -272,6 +411,8 @@ const loadHotelData = async () => {
                     ciudad_id: hotelData.ciudad.data.id,
                     departamento_id: hotelData.ciudad.data.departamento.data.id
                 };
+                habdata.value.hotel_id = hotelId.value;
+                maxHabitaciones.value = form.value.totalhab;
             } else {
                 showAlert('error', 'Error', 'Hubo un problema al cargar los datos del hotel.');
             }
@@ -284,13 +425,15 @@ const loadHotelData = async () => {
 
 onMounted(() => {
     const elementId = route.params.elementId;
+    hotelId.value = elementId;
     if (elementId) {
         form.value.element_id = elementId;
         loadHotelData();
     }
+    fetchDepartamentos();
+    fetchHabitaciones();
+    fetchHabitacionHotel();
 });
-
-onMounted(fetchDepartamentos);
 </script>
 
 <style scoped>

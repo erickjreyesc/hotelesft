@@ -17,8 +17,6 @@
                     <tr>
                         <th>Nombre</th>
                         <th>Dirección</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
                         <th>Estado</th>
                         <th>Total</th>
                         <th></th>
@@ -33,8 +31,6 @@
                         <td>{{ item.direccion }} <br>
                             <small>{{ item.ciudad.data.nombre }}</small>
                         </td>
-                        <td>{{ item.telefono }}</td>
-                        <td>{{ item.correo }}</td>
                         <td>
                             <span v-if="item.estado">
                                 <i class="fa-solid fa-circle-check text-success"></i>
@@ -90,20 +86,15 @@ export default {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-
                 const result = await response.json();
-
                 data.value = result.data;
-
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
                 loaderStore.setLoading(false);
             }
         };
-
         onMounted(fetchData);
-
         return {
             data
         };
