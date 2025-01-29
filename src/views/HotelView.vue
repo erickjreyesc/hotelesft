@@ -1,7 +1,7 @@
 <template>
     <div class="row mt-3">
         <div class="col-sm-6">
-            <h1 class="h5">Hoteles</h1>
+            <h1 class="h5 text-success fw-bold">Hoteles</h1>
         </div>
         <div class="col-sm-6 text-end">
             <RouterLink :to="{ name: 'hotel-form' }" class="btn btn-success rounded">
@@ -11,7 +11,6 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <ClipLoader v-if="loading" />
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>

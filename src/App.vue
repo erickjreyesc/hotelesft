@@ -8,10 +8,12 @@
             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <div class="justify-content-end collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <RouterLink to="/" class="nav-link active" aria-current="page">Inicio</RouterLink>
+                <RouterLink to="/" class="nav-link active" aria-current="page">
+                  <i class="fa-solid fa-house text-white"></i>
+                </RouterLink>
               </li>
               <li class="nav-item">
                 <RouterLink to="/hoteles" class="nav-link">Hoteles</RouterLink>
