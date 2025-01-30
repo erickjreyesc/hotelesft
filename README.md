@@ -1,33 +1,35 @@
-# frontend
+# Frontend Hoteleria.
 
-This template should help get you started developing with Vue 3 in Vite.
+_Microapp frontend hoteleria._
 
-## Recommended IDE Setup
+## Requerimientos Mínimos de PHP.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+```
+* Node >= 23
+```
 
-## Type Support for `.vue` Imports in TS
+## _Clonar Repositorio_
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## _Ejecución del Node en el projecto - Librerias_
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## _Ejecución de paquetes en entorno productivo_
 
-```sh
+```
+npm run build
+```
+
+## _Ejecución de paquetes en entorno desarrollo_
+
+```
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## _Copiar el archivo env.example .env_
 
-```sh
-npm run build
+``` 
+cp .env.example .env
 ```
