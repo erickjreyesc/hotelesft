@@ -71,12 +71,11 @@
 <script lang="ts">
 import apiRoutes from '@/router/ApiRoutes';
 import { onMounted, ref } from 'vue';
-import { RouterLink } from 'vue-router';
 import { useLoaderStore } from '../../store/LoaderStore';
 
 export default {
     setup() {
-        const data = ref([]);
+        const data = ref();
         const loaderStore = useLoaderStore();
         const fetchData = async () => {
             loaderStore.setLoading(true);

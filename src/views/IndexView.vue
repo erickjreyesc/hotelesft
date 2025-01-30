@@ -8,7 +8,7 @@
                 <div class="card mb-3">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img src="/public/hoteles.jpg" class="img-fluid">
+                            <img src="/hoteles.jpg" class="img-fluid">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
@@ -25,7 +25,7 @@
                 <div class="card mb-3">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img src="/public/informe.jpg" class="img-fluid">
+                            <img src="/informe.jpg" class="img-fluid">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
