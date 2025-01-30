@@ -21,7 +21,7 @@
                 </tr>
                 <tr>
                     <th>CIUDAD</th>
-                    <td>{{ hotel.ciudad.data.nombre }}</td>
+                    <td>{{ hotel.ciudad?.data.nombre }}</td>
                     <th>NIT</th>
                     <td>{{ hotel.nit }}</td>
                 </tr>
@@ -63,11 +63,8 @@ const hotel = ref({});
 
 const fetchHotelData = async (element_id) => {
     try {
-        const response = await fetch(apiRoutes.getHoteles.url + element_id);
-
+        const response = await fetch(apiRoutes.getHoteles.url + "/" + element_id);
         const data = await response.json();
-        console.log(data);
-
         hotel.value = data.data;
     } catch (error) {
         console.error('Error al cargar los datos del hotel:', error);
@@ -76,8 +73,6 @@ const fetchHotelData = async (element_id) => {
 
 onMounted(() => {
     const elementId = route.params.elementId; // Obtener el parámetro de la URL
-    console.log(elementId);
-
     if (elementId) {
         fetchHotelData(elementId);
     }
