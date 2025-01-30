@@ -26,8 +26,8 @@ jobs:
 
       - name: Build project
         env:
-          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
-          VUE_APP_PUBLIC_PATH: ${{ secrets.VUE_APP_PUBLIC_PATH }}
+          VUE_APP_API_URL: https://erickjreyesc.github.io/
+          VUE_APP_PUBLIC_PATH: /hotelesft/
         run: npm run build
 
       - name: Deploy to GitHub Pages
