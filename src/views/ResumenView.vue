@@ -13,7 +13,8 @@
         <div class="col-12">
             <h1 class="h5 fw-bold text-success my-3">Datos del Hotel</h1>
             <table class="table table-bordered">
-                <tr>
+                <tbody>
+                    <tr>
                     <th>NOMBRE</th>
                     <td>{{ hotel.nombre }}</td>
                     <th>DIRECCIÓN</th>
@@ -31,6 +32,7 @@
                         {{ hotel.totalhab }}
                     </td>
                 </tr>
+                </tbody>
             </table>
             <h2 class="h5 fw-bold text-success my-3">Cantidad de habitaciones</h2>
             <table class="table table-bordered mt-4">
